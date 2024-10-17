@@ -1,59 +1,46 @@
-import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
-import UserItem from "@/components/user-item";
-import { Colors } from "@/constants/Colors";
-import { USER } from "@/data";
+import React, { useContext } from "react";
+import { View } from "react-native";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+} from "@react-native-google-signin/google-signin";
+import signIn from "@/SignIn";
+import { WEB_ID, APPLE_ID } from "@/Key";
+import { AuthContext } from "@/contexts/AuthProvider";
+import { useRouter } from "expo-router";
+import { Routes } from "@/types";
 
-interface PickedLocation {
-  lat: number;
-  long: number;
-}
-interface User {
-  id: string;
-  title: string;
-  location: PickedLocation;
-  image: string;
-}
+GoogleSignin.configure({
+  webClientId: WEB_ID,
+  scopes: ["https://www.googleapis.com/auth/drive.readonly"],
+  offlineAccess: true,
+  forceCodeForRefreshToken: true,
+  iosClientId: APPLE_ID,
+});
 
-const UserList: React.FC = () => {
-  const handleUserPress = (userName: string) => {
-    alert(`User pressed: ${userName}`);
+const index = () => {
+  const AuthCTX = useContext(AuthContext);
+  const router = useRouter();
+
+  const handleSignIn = async () => {
+    const user = await signIn();
+    if (user) {
+      // AuthCTX?.setIsAuthenticated(true);
+      // AuthCTX?.setUserInfo(user);
+      // router.navigate(Routes.ALL_USERS);
+      console.log(user);
+    }
   };
 
-  const renderItem = ({ item }: { item: User }) => (
-    <UserItem title={item.title} image={item.image} />
-  );
-
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={USER}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <GoogleSigninButton
+        size={GoogleSigninButton.Size.Wide}
+        color={GoogleSigninButton.Color.Dark}
+        onPress={handleSignIn}
       />
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.light.background,
-    padding: 16,
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-    color: Colors.light.text,
-  },
-  listContainer: {
-    paddingBottom: 100,
-  },
-});
-
-export default UserList;
+export default index;

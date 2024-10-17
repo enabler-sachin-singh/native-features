@@ -1,35 +1,38 @@
-import { Stack, useRouter } from "expo-router";
-import { TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import React, { useContext, useEffect } from "react";
+import { Stack, useRouter, useSegments } from "expo-router";
+import AuthProvider, { AuthContext } from "@/contexts/AuthProvider";
 
-export default function RootLayout() {
+const StackLayout = () => {
+  const authCTX = useContext(AuthContext);
+  const segments = useSegments();
   const router = useRouter();
 
-  const handleAddPress = () => {
-    router.navigate("/AddUser");
-  };
+  useEffect(() => {
+    const inAuthGroup = segments[0] === "(protected)";
+    console.log("Authentication status:", authCTX?.isAuthenticated);
+    console.log("Current segment:", segments);
+
+    if (!authCTX?.isAuthenticated && inAuthGroup) {
+      console.log("Not logged in, redirecting to home...");
+      router.replace("/");
+    } else if (authCTX?.isAuthenticated && !inAuthGroup) {
+      console.log("Logged in, redirecting to protected...");
+      router.replace("/(protected)");
+    }
+  }, [authCTX, segments]);
 
   return (
     <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: "All Users",
-          headerRight: () => (
-            <TouchableOpacity onPress={handleAddPress}>
-              <Ionicons name="add" size={24} color="black" />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-
-      {/* GoogleAuth */}
-      <Stack.Screen
-        name="GoogleAuthPage"
-        options={{
-          title: "Google Login",
-        }}
-      />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen name="(protected)" options={{ headerShown: false }} />
     </Stack>
+  );
+};
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <StackLayout />
+    </AuthProvider>
   );
 }
