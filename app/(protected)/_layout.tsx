@@ -12,7 +12,6 @@ export default function Layout() {
             title: "Overview",
           }}
         />
-        {/* Add other screens here as needed */}
       </Drawer>
     </GestureHandlerRootView>
   );

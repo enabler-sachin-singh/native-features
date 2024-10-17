@@ -1,38 +1,33 @@
 import React, { useContext, useEffect } from "react";
-import { Stack, useRouter, useSegments } from "expo-router";
+import { useRouter, useSegments, Redirect } from "expo-router";
 import AuthProvider, { AuthContext } from "@/contexts/AuthProvider";
+import { Slot } from "expo-router";
 
-const StackLayout = () => {
+const RootLayout = () => {
   const authCTX = useContext(AuthContext);
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    const inAuthGroup = segments[0] === "(protected)";
     console.log("Authentication status:", authCTX?.isAuthenticated);
-    console.log("Current segment:", segments);
+    console.log("Current segment:", segments[0]);
 
-    if (!authCTX?.isAuthenticated && inAuthGroup) {
-      console.log("Not logged in, redirecting to home...");
-      router.replace("/");
-    } else if (authCTX?.isAuthenticated && !inAuthGroup) {
-      console.log("Logged in, redirecting to protected...");
+    if (!authCTX?.isAuthenticated) {
+      console.log("Redirecting to home from protected route.");
+      router.replace("/googleSignin");
+    } else if (authCTX?.isAuthenticated) {
+      console.log("Redirecting to protected route.");
       router.replace("/(protected)");
     }
-  }, [authCTX, segments]);
+  }, [authCTX?.isAuthenticated, router]);
 
-  return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(protected)" options={{ headerShown: false }} />
-    </Stack>
-  );
+  return <Slot />;
 };
 
-export default function RootLayout() {
+export default function Root() {
   return (
     <AuthProvider>
-      <StackLayout />
+      <RootLayout />
     </AuthProvider>
   );
 }
