@@ -1,38 +1,59 @@
 import React from "react";
-import { View } from "react-native";
-import {
-  GoogleSignin,
-  GoogleSigninButton,
-} from "@react-native-google-signin/google-signin";
-import signIn from "@/SignIn";
-import { WEB_ID, APPLE_ID } from "@/Key";
+import { View, Text, FlatList, StyleSheet } from "react-native";
+import UserItem from "@/components/user-item";
+import { Colors } from "@/constants/Colors";
+import { USER } from "@/data";
 
-GoogleSignin.configure({
-  webClientId: WEB_ID,
-  scopes: ["https://www.googleapis.com/auth/drive.readonly"],
-  offlineAccess: true,
-  forceCodeForRefreshToken: true,
-  iosClientId: APPLE_ID,
-});
+interface PickedLocation {
+  lat: number;
+  long: number;
+}
+interface User {
+  id: string;
+  title: string;
+  location: PickedLocation;
+  image: string;
+}
 
-const Index = () => {
-  const handleSignIn = async () => {
-    const user = await signIn();
-    if (user) {
-      // setUserInfo(user); // Update state with user info
-      console.log(user);
-    }
+const UserList: React.FC = () => {
+  const handleUserPress = (userName: string) => {
+    alert(`User pressed: ${userName}`);
   };
 
+  const renderItem = ({ item }: { item: User }) => (
+    <UserItem title={item.title} image={item.image} />
+  );
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <GoogleSigninButton
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Dark}
-        onPress={handleSignIn}
+    <View style={styles.container}>
+      <FlatList
+        data={USER}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
+        showsHorizontalScrollIndicator={false}
       />
     </View>
   );
 };
 
-export default Index;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    padding: 16,
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+    color: Colors.light.text,
+  },
+  listContainer: {
+    paddingBottom: 100,
+  },
+});
+
+export default UserList;
