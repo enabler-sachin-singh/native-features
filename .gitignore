@@ -1,14 +1,31 @@
+# Node modules
 node_modules/
+
+# Expo specific directories
 .expo/
 dist/
+web-build/
+
+# Debug logs
 npm-debug.*
+
+# Sensitive files
 *.jks
 *.p8
 *.p12
-*.key
+*.Key
 *.mobileprovision
+
+# Miscellaneous
 *.orig.*
-web-build/
 
 # macOS
 .DS_Store
+
+# Expo generated files
+expo-env.d.ts
+
+# Ignore .env files for sensitive information
+.env*
+
+# Add any other environment-specific .env files if used
