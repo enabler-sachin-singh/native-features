@@ -16,12 +16,16 @@ interface PickedLocation {
 
 interface PlaceProps {
   onPickLocation: (location: PickedLocation) => void;
+  pickedLocation?: PickedLocation;
 }
 
-const PlacePicker: React.FC<PlaceProps> = ({ onPickLocation }) => {
-  const [pickedLocation, setPickedLocation] = useState<
-    PickedLocation | undefined
-  >(undefined);
+const PlacePicker: React.FC<PlaceProps> = ({
+  onPickLocation,
+  pickedLocation,
+}) => {
+  const [location, setLocation] = useState<PickedLocation | undefined>(
+    pickedLocation
+  );
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
   const [loading, setLoading] = useState(false);
@@ -55,7 +59,7 @@ const PlacePicker: React.FC<PlaceProps> = ({ onPickLocation }) => {
     try {
       const location = await getCurrentPositionAsync();
       const coords: LocationObjectCoords = location.coords;
-      setPickedLocation({ lat: coords.latitude, long: coords.longitude });
+      setLocation({ lat: coords.latitude, long: coords.longitude });
     } catch (error) {
       Alert.alert("Could not fetch location", "Please try again later.");
     } finally {
@@ -64,31 +68,32 @@ const PlacePicker: React.FC<PlaceProps> = ({ onPickLocation }) => {
   };
 
   const removeLocationHandler = () => {
-    setPickedLocation(undefined);
+    setLocation(undefined);
+    onPickLocation({ lat: 0, long: 0 });
   };
 
   useEffect(() => {
-    if (pickedLocation) {
-      onPickLocation(pickedLocation);
+    if (location && location.lat !== 0 && location.long !== 0) {
+      onPickLocation(location);
     }
-  }, [pickedLocation]);
+  }, [location]);
 
   return (
     <View>
       <View style={styles.mapPreview}>
-        {pickedLocation ? (
-          <Text>{`Location: ${pickedLocation.lat}, ${pickedLocation.long}`}</Text>
+        {location ? (
+          <Text>{`Location: ${location.lat}, ${location.long}`}</Text>
         ) : loading ? (
-          <ActivityIndicator size="large" color="blue" />
+          <ActivityIndicator size="large" color={Colors.light.tabIconDefault} />
         ) : (
           <Text>No location picked yet</Text>
         )}
       </View>
       <View style={styles.actions}>
         <CustomButton onPress={getLocationHandler} disabled={loading}>
-          {loading ? "Locating..." : "Locate User"}{" "}
+          {loading ? "Locating..." : "Locate User"}
         </CustomButton>
-        {pickedLocation && (
+        {location && (
           <CustomButton onPress={removeLocationHandler} disabled={loading}>
             Remove Location
           </CustomButton>
@@ -97,8 +102,6 @@ const PlacePicker: React.FC<PlaceProps> = ({ onPickLocation }) => {
     </View>
   );
 };
-
-export default PlacePicker;
 
 const styles = StyleSheet.create({
   mapPreview: {
@@ -109,7 +112,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1,
-
     borderRadius: 4,
     backgroundColor: "#f0f0f0",
   },
@@ -119,3 +121,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
+export default PlacePicker;

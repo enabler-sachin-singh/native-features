@@ -1,4 +1,4 @@
-import { View, Text, Button, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet } from "react-native";
 import React, { useContext } from "react";
 import { AuthContext } from "@/contexts/AuthProvider";
 import { Colors } from "@/constants/Colors";
@@ -7,37 +7,23 @@ const Page = () => {
   const authCTX = useContext(AuthContext);
   const { userInfo } = authCTX || {};
 
-  const handleOnLogout = () => {
-    authCTX?.logout();
-  };
-
   return (
     <View style={styles.container}>
       {userInfo && (
-        <View style={styles.userInfoContainer}>
+        <View style={styles.profileContainer}>
+          <View style={styles.header}>
+            <Text style={styles.headerText}>Sachin</Text>
+          </View>
           {userInfo.photo && (
             <Image
               source={{ uri: userInfo.photo }}
               style={styles.profileImage}
             />
           )}
-          <Text style={styles.userInfoText}>ID: {userInfo.id}</Text>
-          <Text style={styles.userInfoText}>Name: {userInfo.name}</Text>
-          <Text style={styles.userInfoText}>Email: {userInfo.email}</Text>
-          <Text style={styles.userInfoText}>
-            Family Name: {userInfo.familyName}
-          </Text>
-          <Text style={styles.userInfoText}>
-            Given Name: {userInfo.givenName}
-          </Text>
+          <Text style={styles.userName}>{userInfo.name}</Text>
+          <Text style={styles.userEmail}>{userInfo.email}</Text>
         </View>
       )}
-
-      <Button
-        title="Logout"
-        onPress={handleOnLogout}
-        color={Colors.light.tint}
-      />
     </View>
   );
 };
@@ -46,27 +32,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
-    padding: 20,
-    justifyContent: "center",
+  },
+  profileContainer: {
+    alignItems: "center",
+    width: "100%",
+  },
+  header: {
+    width: "100%",
+    backgroundColor: "#D1E6FF",
+    paddingVertical: 20,
     alignItems: "center",
   },
-  userInfoContainer: {
-    marginBottom: 30,
-    alignItems: "center",
-    backgroundColor: Colors.light.tint,
-    borderRadius: 10,
-    padding: 20,
+  headerText: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: Colors.light.text,
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 20,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    borderWidth: 5,
+    borderColor: "#fff",
   },
-  userInfoText: {
+  userName: {
+    fontSize: 22,
+    fontWeight: "bold",
+    marginTop: 10,
+    color: Colors.light.text,
+  },
+  userEmail: {
     fontSize: 18,
     color: Colors.light.text,
-    marginBottom: 10,
+    marginTop: 5,
   },
 });
 

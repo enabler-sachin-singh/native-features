@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   Alert,
   Image,
@@ -15,14 +15,17 @@ import {
 import { Colors } from "@/constants/Colors";
 import CustomButton from "@/components/ui/Button";
 
-interface ImagePicker {
-  onPickImage: (imageUri: string) => void;
+interface ImagePickerProps {
+  onPickImage: (imageUri: string | undefined) => void;
+  pickedImageUri: string | undefined;
 }
 
-const ImagePicker: React.FC<ImagePicker> = ({ onPickImage }) => {
+const ImagePicker: React.FC<ImagePickerProps> = ({
+  onPickImage,
+  pickedImageUri,
+}) => {
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
-  const [pickedImageUri, setPickedImageUri] = useState<string | undefined>();
 
   const verifyPermission = async () => {
     if (cameraPermissionInformation?.status === PermissionStatus.UNDETERMINED) {
@@ -56,14 +59,13 @@ const ImagePicker: React.FC<ImagePicker> = ({ onPickImage }) => {
     });
 
     if (!image.canceled && image.assets) {
-      setPickedImageUri(image.assets[0].uri);
       onPickImage(image.assets[0].uri);
     }
   };
 
   // Function to remove the image
   const cancelImage = () => {
-    setPickedImageUri(undefined);
+    onPickImage(undefined);
   };
 
   let imagePrev = <Text>No Image Taken Yet</Text>;

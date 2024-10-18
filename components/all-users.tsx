@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, StyleSheet, Button } from "react-native";
 import UserItem from "@/components/user-item";
 import { Colors } from "@/constants/Colors";
 import { USER } from "@/lib";
@@ -26,14 +26,20 @@ const UserList: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={USER}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
-        showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}
-      />
+      {USER.length === 0 ? (
+        <View>
+          <Text style={styles.noUsersText}>No current users</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={USER}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+        />
+      )}
     </View>
   );
 };
@@ -44,12 +50,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     padding: 16,
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+  noUsersText: {
+    fontSize: 18,
     color: Colors.light.text,
+    textAlign: "center",
+    marginTop: 20,
   },
   listContainer: {
     paddingBottom: 100,

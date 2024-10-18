@@ -1,6 +1,12 @@
 import React, { useState } from "react";
-import { View, TextInput, StyleSheet, ScrollView } from "react-native";
-import { Colors } from "@/constants/Colors";
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import ImagePicker from "./image-form";
 import PlacePicker from "./location-form";
 import CustomButton from "@/components/ui/Button";
@@ -13,25 +19,43 @@ interface PickedLocation {
 }
 
 const AddUserForm = () => {
-  const route = useRouter();
+  const router = useRouter();
 
-  const [formData, setFormData] = useState({
+  const initialFormData = {
     title: "",
     image: "",
     location: { lat: 0, long: 0 },
-  });
+  };
 
-  const handleChange = (
-    name: keyof typeof formData,
+  const [formData, setFormData] = useState(initialFormData);
+
+  const { title, image, location } = formData;
+
+  const handleFormChange = (
+    field: keyof typeof formData,
     value: string | PickedLocation
   ) => {
-    setFormData((prevState) => ({
-      ...prevState,
-      [name]: value,
+    setFormData((prevData) => ({
+      ...prevData,
+      [field]: value,
     }));
   };
 
+  const handleOnLocationTaken = (location: PickedLocation) => {
+    handleFormChange("location", location);
+  };
+
+  const handleOnImageTaken = (imageUri: string | undefined) => {
+    handleFormChange("image", imageUri || ""); // Handle the image removal
+  };
+
+  const validateForm = () => {
+    return title.trim() && image && location.lat !== 0 && location.long !== 0;
+  };
+
   const handleSubmit = () => {
+    if (!validateForm()) return;
+
     const newId = `${
       parseInt(new Date().toLocaleTimeString()) * Math.random()
     }`;
@@ -41,58 +65,53 @@ const AddUserForm = () => {
     };
 
     USER?.push(newUser);
-    route.navigate("/");
-  };
 
-  const handleOnLocationTaken = (location: PickedLocation) => {
-    handleChange("location", location);
-  };
+    // Reset form after submission
+    setFormData(initialFormData);
 
-  const handleOnImageTaken = (imageUri: string) => {
-    handleChange("image", imageUri);
+    router.push("/allUsers");
   };
-
-  const isFormValid =
-    formData.title &&
-    formData.image &&
-    formData.location.lat &&
-    formData.location.long;
 
   return (
-    <>
-      <ScrollView style={styles.form}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView contentContainerStyle={styles.form}>
         <View>
           <TextInput
-            style={styles.titleInput}
+            style={styles.input}
             placeholder="Title"
-            value={formData.title}
-            onChangeText={(value) => handleChange("title", value)}
+            value={title}
+            onChangeText={(value) => handleFormChange("title", value)}
           />
         </View>
-        <ImagePicker onPickImage={handleOnImageTaken} />
-        <PlacePicker onPickLocation={handleOnLocationTaken} />
-        <View style={{ marginTop: 40 }}>
-          <CustomButton onPress={handleSubmit} disabled={!isFormValid}>
-            Add User
-          </CustomButton>
-        </View>
+
+        <ImagePicker onPickImage={handleOnImageTaken} pickedImageUri={image} />
+        <PlacePicker
+          onPickLocation={handleOnLocationTaken}
+          pickedLocation={location}
+        />
       </ScrollView>
-    </>
+
+      {/* Button at the bottom */}
+      <View style={styles.buttonContainer}>
+        <CustomButton onPress={handleSubmit} disabled={!validateForm()}>
+          Add User
+        </CustomButton>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  form: {
-    flex: 1,
-    padding: 24,
-  },
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: Colors.light.background,
-    justifyContent: "flex-start",
   },
-  titleInput: {
+  form: {
+    padding: 20,
+  },
+  input: {
     height: 40,
     borderColor: "#ccc",
     borderWidth: 1,
@@ -101,14 +120,12 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: "#fff",
   },
-  descriptionInput: {
-    height: 100,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 8,
-    borderRadius: 5,
-    backgroundColor: "#fff",
+  buttonContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    padding: 20,
   },
 });
 

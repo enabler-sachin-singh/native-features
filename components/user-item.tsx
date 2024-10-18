@@ -5,14 +5,18 @@ import { Colors } from "@/constants/Colors";
 interface UserItemProps {
   image: string;
   title: string;
+  lat: number;
+  long: number;
 }
 
-const UserItem: React.FC<UserItemProps> = ({ image, title }) => {
+const UserItem: React.FC<UserItemProps> = ({ image, title, lat, long }) => {
   return (
     <TouchableOpacity style={styles.userCard}>
       <Image source={{ uri: image }} style={styles.userImage} />
       <View style={styles.userInfo}>
         <Text style={styles.userName}>{title}</Text>
+        <Text style={styles.userCoordinates}>Lat: {lat}</Text>
+        <Text style={styles.userCoordinates}>Long: {long}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -46,9 +50,10 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: Colors.light.text,
   },
-  userDescription: {
+  userCoordinates: {
     fontSize: 14,
     color: Colors.light.icon,
+    marginTop: 4,
   },
 });
 

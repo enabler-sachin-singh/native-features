@@ -24,7 +24,6 @@ const SignIn = () => {
     if (user) {
       AuthCTX?.setIsAuthenticated(true);
       AuthCTX?.setUserInfo(user);
-      console.log(user);
     }
   };
 
