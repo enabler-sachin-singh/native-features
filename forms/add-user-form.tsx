@@ -5,7 +5,7 @@ import ImagePicker from "./image-form";
 import PlacePicker from "./location-form";
 import CustomButton from "@/components/ui/Button";
 import { useRouter } from "expo-router";
-import { USER } from "@/data";
+import { USER } from "@/lib";
 
 interface PickedLocation {
   lat: number;
@@ -40,7 +40,7 @@ const AddUserForm = () => {
       ...formData,
     };
 
-    USER.push(newUser);
+    USER?.push(newUser);
     route.navigate("/");
   };
 

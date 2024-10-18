@@ -1,23 +1,18 @@
 import React, { useContext, useEffect } from "react";
-import { useRouter, useSegments, Redirect } from "expo-router";
+import { useRouter } from "expo-router";
 import AuthProvider, { AuthContext } from "@/contexts/AuthProvider";
 import { Slot } from "expo-router";
+import { Routes } from "@/utils";
 
 const RootLayout = () => {
   const authCTX = useContext(AuthContext);
-  const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    console.log("Authentication status:", authCTX?.isAuthenticated);
-    console.log("Current segment:", segments[0]);
-
     if (!authCTX?.isAuthenticated) {
-      console.log("Redirecting to home from protected route.");
-      router.replace("/googleSignin");
+      router.replace(Routes.LOGIN);
     } else if (authCTX?.isAuthenticated) {
-      console.log("Redirecting to protected route.");
-      router.replace("/(protected)");
+      router.replace(Routes.PROTECTED_ROUTES);
     }
   }, [authCTX?.isAuthenticated, router]);
 

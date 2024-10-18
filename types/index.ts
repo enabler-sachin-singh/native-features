@@ -8,9 +8,13 @@ export type UserProfileType = {
   givenName: string | null;
 };
 
-// ENUM for routes
-export enum Routes {
-  LOGIN = "/googleLogin",
-  ADD_USERS = "/addUser",
-  ALL_USERS = "/allUsers",
+// Type for user
+export interface User {
+  title: string;
+  image: string;
+  location: {
+    lat: number;
+    long: number;
+  };
+  id: string;
 }

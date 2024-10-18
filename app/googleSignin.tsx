@@ -1,15 +1,12 @@
 import React, { useContext } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import {
   GoogleSignin,
   GoogleSigninButton,
 } from "@react-native-google-signin/google-signin";
-import signIn from "@/SignIn";
-import { WEB_ID, APPLE_ID } from "@/Key";
+import { signIn } from "@/lib";
+import { WEB_ID, APPLE_ID } from "@/utils";
 import { AuthContext } from "@/contexts/AuthProvider";
-
-console.log(WEB_ID);
-console.log(APPLE_ID);
 
 GoogleSignin.configure({
   webClientId: WEB_ID,

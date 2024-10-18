@@ -4,20 +4,23 @@ import {
   isSuccessResponse,
 } from "@react-native-google-signin/google-signin";
 
-// Function to check if the error has a code property
-const isErrorWithCode = (error) => {
+interface GoogleSignInError {
+  code: string;
+  [key: string]: any;
+}
+
+const isErrorWithCode = (error: any): error is GoogleSignInError => {
   return error && typeof error.code === "string";
 };
 
-// Updated signIn function
-const signIn = async () => {
+export const signIn = async () => {
   try {
     await GoogleSignin.hasPlayServices();
     const response = await GoogleSignin.signIn();
 
     if (isSuccessResponse(response)) {
       console.log(response.data.user);
-      return response.data.user; // Return user info directly
+      return response.data.user;
     } else {
       console.log("Sign-in was cancelled by user.");
     }
@@ -37,7 +40,5 @@ const signIn = async () => {
       console.error("An unexpected error occurred:", error);
     }
   }
-  return null; // Return null if sign-in fails
+  return null;
 };
-
-export default signIn;
