@@ -8,6 +8,9 @@ import signIn from "@/SignIn";
 import { WEB_ID, APPLE_ID } from "@/Key";
 import { AuthContext } from "@/contexts/AuthProvider";
 
+console.log(WEB_ID);
+console.log(APPLE_ID);
+
 GoogleSignin.configure({
   webClientId: WEB_ID,
   scopes: ["https://www.googleapis.com/auth/drive.readonly"],
